@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Shade.Models;
@@ -23,15 +22,10 @@ public sealed class CoreManager
     private readonly ConfigStore _store = new();
 
     /// Path to the bundled core binary, resolved next to the app's exe.
-    public static string CoreExePath
-    {
-        get
-        {
-            var exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location
-                ?? AppContext.BaseDirectory) ?? AppContext.BaseDirectory;
-            return Path.Combine(exeDir, "shade-core.exe");
-        }
-    }
+    /// Uses AppContext.BaseDirectory because Assembly.Location is empty in
+    /// single-file (PublishSingleFile) builds.
+    public static string CoreExePath =>
+        Path.Combine(AppContext.BaseDirectory, "shade-core.exe");
 
     public async Task StartAsync(AppSettings settings)
     {

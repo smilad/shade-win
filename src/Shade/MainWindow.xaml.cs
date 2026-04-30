@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -96,9 +95,9 @@ public partial class MainWindow : Window
     {
         try
         {
-            var exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location
-                ?? AppContext.BaseDirectory) ?? AppContext.BaseDirectory;
-            var icoPath = Path.Combine(exeDir, "Resources", "Shade.ico");
+            // AppContext.BaseDirectory works in both single-file and normal
+            // builds; Assembly.Location is empty under PublishSingleFile.
+            var icoPath = Path.Combine(AppContext.BaseDirectory, "Resources", "Shade.ico");
             if (File.Exists(icoPath))
                 return new BitmapImage(new Uri(icoPath, UriKind.Absolute));
 

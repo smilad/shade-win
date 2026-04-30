@@ -12,7 +12,7 @@ public partial class App : Application
     {
         try
         {
-            if (State.Status.IsRunning && State.Settings.UseSystemProxy)
+            if (State.StatusObj.IsRunning && State.Settings.UseSystemProxy)
             {
                 SystemProxy.DisableSync();
             }
