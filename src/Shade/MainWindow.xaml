@@ -1,0 +1,48 @@
+<Window x:Class="Shade.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:views="clr-namespace:Shade.Views"
+        Title="Shade"
+        Width="980" Height="720"
+        MinWidth="900" MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBackground}"
+        Foreground="{StaticResource Primary}"
+        AllowsTransparency="False"
+        WindowStyle="SingleBorderWindow"
+        FontFamily="Segoe UI">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <views:Sidebar Grid.Column="0" x:Name="SidebarHost" />
+
+        <!-- Detail area -->
+        <Grid Grid.Column="1" x:Name="DetailHost" Margin="24">
+            <ContentControl x:Name="DetailContent" />
+        </Grid>
+
+        <!-- Tray icon (icon source set in code-behind so a missing
+             Resources\Shade.ico does not break the build) -->
+        <tb:TaskbarIcon x:Name="Tray"
+                        ToolTipText="Shade"
+                        TrayMouseDoubleClick="Tray_OnDoubleClick"
+                        NoLeftClickDelay="True">
+            <tb:TaskbarIcon.TrayPopup>
+                <views:TrayPopupView x:Name="TrayPopup" />
+            </tb:TaskbarIcon.TrayPopup>
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Show Dashboard" Click="ShowFromTray_Click" />
+                    <Separator />
+                    <MenuItem Header="Quit" Click="Quit_Click" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+    </Grid>
+</Window>

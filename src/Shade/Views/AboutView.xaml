@@ -1,0 +1,92 @@
+<UserControl x:Class="Shade.Views.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer>
+        <StackPanel>
+            <DockPanel Margin="0,0,0,20">
+                <Border Width="72" Height="72" CornerRadius="16"
+                        Background="{StaticResource AccentPurple}" VerticalAlignment="Center">
+                    <TextBlock Text="S" FontSize="38" FontWeight="Bold" Foreground="#FF111122"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="Shade" FontSize="28" FontWeight="Bold" />
+                    <TextBlock Text="Version 1.1.0" Style="{StaticResource MonoText}" Margin="0,4,0,0" />
+                    <TextBlock Text="MasterHttpRelayVPN client (Windows port) — by g3ntrix"
+                               Style="{StaticResource MutedText}" Margin="0,2,0,0" />
+                </StackPanel>
+            </DockPanel>
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <TextBlock Text="Credits" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{StaticResource Tertiary}" Margin="0,0,0,8" />
+                    <TextBlock Text="Client developed by g3ntrix" FontSize="13" FontWeight="SemiBold" />
+                    <Button Style="{StaticResource LinkButton}" Click="OpenTelegram_Click" HorizontalAlignment="Left"
+                            Margin="0,4,0,0">
+                        <TextBlock Text="Telegram: @g3ntrix" Foreground="{StaticResource AccentPurple}" />
+                    </Button>
+                    <Button Style="{StaticResource LinkButton}" Click="OpenUpstream_Click" HorizontalAlignment="Left"
+                            Margin="0,4,0,0">
+                        <TextBlock Text="Upstream project: MasterHttpRelayVPN (masterdnsvpn)"
+                                   Foreground="{StaticResource AccentPurple}" />
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <TextBlock Text="Donations" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{StaticResource Tertiary}" Margin="0,0,0,8" />
+                    <DockPanel Margin="0,4">
+                        <TextBlock Text="TON" Width="100" FontWeight="Bold" />
+                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="10,4"
+                                Click="Copy_Click" Tag="UQCriHkMUa6h9oN059tyC23T13OsQhGGM3hUS2S4IYRBZgvx">
+                            <TextBlock Text="Copy" />
+                        </Button>
+                        <TextBlock Text="UQCriHkMUa6h9oN059tyC23T13OsQhGGM3hUS2S4IYRBZgvx"
+                                   Style="{StaticResource MonoText}" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+                    </DockPanel>
+                    <DockPanel Margin="0,4">
+                        <TextBlock Text="USDT (BEP20)" Width="100" FontWeight="Bold" />
+                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="10,4"
+                                Click="Copy_Click" Tag="0x71F41696c60C4693305e67eE3Baa650a4E3dA796">
+                            <TextBlock Text="Copy" />
+                        </Button>
+                        <TextBlock Text="0x71F41696c60C4693305e67eE3Baa650a4E3dA796"
+                                   Style="{StaticResource MonoText}" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+                    </DockPanel>
+                    <DockPanel Margin="0,4">
+                        <TextBlock Text="TRX (TRON)" Width="100" FontWeight="Bold" />
+                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="10,4"
+                                Click="Copy_Click" Tag="TFrCzU7bDey9WSh3fhqCBqhaiMzr8VhcUV">
+                            <TextBlock Text="Copy" />
+                        </Button>
+                        <TextBlock Text="TFrCzU7bDey9WSh3fhqCBqhaiMzr8VhcUV"
+                                   Style="{StaticResource MonoText}" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="What's inside" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8" />
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="📦" Width="22" Foreground="{StaticResource AccentPurple}" />
+                        <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap"
+                                   Text="Bundled Python core (shade-core.exe): no system Python required." />
+                    </DockPanel>
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="🔒" Width="22" Foreground="{StaticResource AccentPurple}" />
+                        <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap"
+                                   Text="Auto MITM CA management under %APPDATA%\Shade\ca." />
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

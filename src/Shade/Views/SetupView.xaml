@@ -1,0 +1,94 @@
+<UserControl x:Class="Shade.Views.SetupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <StackPanel Margin="0,0,0,18">
+                <TextBlock Text="Setup Guide" Style="{StaticResource Heading}" />
+                <TextBlock Text="Three steps to get Shade running. You only need to do this once."
+                           Style="{StaticResource MutedText}" Margin="0,4,0,0" />
+            </StackPanel>
+
+            <!-- STEP 1 -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                        <Border Width="28" Height="28" CornerRadius="14" Background="{StaticResource AccentPurple}"
+                                VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="1" Foreground="#FF111122" FontWeight="Bold" FontSize="14"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Deploy the Apps Script relay"
+                                   FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,10"
+                               Text="Open Google Apps Script, paste the relay snippet from this repo's apps_script/Code.gs, set AUTH_KEY to a strong secret, then deploy as a Web app (Execute as Me, Anyone). Copy the Deployment ID — you'll paste it in step 3." />
+                    <DockPanel>
+                        <Button Style="{StaticResource PrimaryButton}" Click="OpenAppsScript_Click" Padding="12,6">
+                            <TextBlock Text="↗  Open Google Apps Script" Foreground="#FF111122" FontWeight="SemiBold" />
+                        </Button>
+                        <Button Style="{StaticResource GhostButton}" Click="OpenCode_Click" Padding="12,6" Margin="8,0,0,0">
+                            <TextBlock Text="📄  View Code.gs" />
+                        </Button>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 2 -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                        <Border Width="28" Height="28" CornerRadius="14" Background="{StaticResource AccentPurple}"
+                                VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="2" Foreground="#FF111122" FontWeight="Bold" FontSize="14"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Install the MITM root certificate"
+                                   FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,10"
+                               Text="Shade signs HTTPS traffic with a per-machine CA. Hitting Start on the Dashboard does this automatically (no UAC needed — it goes into your user Trusted Root). Use this button to install it manually before the first run." />
+                    <DockPanel>
+                        <Button Style="{StaticResource PrimaryButton}" Click="InstallCert_Click" x:Name="InstallCertBtn" Padding="12,6">
+                            <TextBlock Text="🔒  Install certificate now" Foreground="#FF111122" FontWeight="SemiBold" />
+                        </Button>
+                        <TextBlock x:Name="InstallCertText" Style="{StaticResource SmallText}"
+                                   VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- STEP 3 -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                        <Border Width="28" Height="28" CornerRadius="14" Background="{StaticResource AccentPurple}"
+                                VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="3" Foreground="#FF111122" FontWeight="Bold" FontSize="14"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Add your profile and Start"
+                                   FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,10"
+                               Text="Open the Dashboard, hit ＋, and paste your Deployment ID and Auth Key. Then click START. Toggle 'Set as system proxy' to push HTTP traffic through Shade automatically." />
+                    <Button Style="{StaticResource PrimaryButton}" Click="GoToDashboard_Click"
+                            HorizontalAlignment="Left" Padding="12,6">
+                        <TextBlock Text="→  Open Dashboard" Foreground="#FF111122" FontWeight="SemiBold" />
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- TLDR card -->
+            <Border Background="#26B191FF" BorderBrush="{StaticResource AccentPurple}"
+                    BorderThickness="1" CornerRadius="10" Padding="14">
+                <StackPanel>
+                    <TextBlock Text="TL;DR" FontSize="11" FontWeight="Bold"
+                               Foreground="{StaticResource AccentPurple}" Margin="0,0,0,4" />
+                    <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap"
+                               Text="Deploy Code.gs to Apps Script, copy the Deployment ID + AUTH_KEY into a profile, click Start. The certificate is installed automatically on first run." />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

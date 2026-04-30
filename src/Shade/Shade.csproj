@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>Shade</RootNamespace>
+    <AssemblyName>Shade</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>false</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon Condition="Exists('Resources\Shade.ico')">Resources\Shade.ico</ApplicationIcon>
+    <Version>1.1.0</Version>
+    <FileVersion>1.1.0</FileVersion>
+    <Product>Shade</Product>
+    <Company>g3ntrix</Company>
+    <Description>Shade — DPI-resistant proxy client (Windows port of g3ntrix/Shade)</Description>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Shade.ico" Condition="Exists('Resources\Shade.ico')" />
+    <Resource Include="Resources\Shade.png" Condition="Exists('Resources\Shade.png')" />
+    <None Include="Resources\shade-core.exe" Condition="Exists('Resources\shade-core.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
