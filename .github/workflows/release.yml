@@ -42,6 +42,23 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      # The prebuilt PyInstaller bootloader on PyPI is fingerprinted by
+      # most antivirus vendors (malware authors heavily abuse PyInstaller),
+      # so any .exe produced with it gets flagged on user machines.
+      # Compiling the bootloader from source on the runner produces a
+      # unique binary hash that hasn't been signatured. This is the single
+      # highest-impact step for reducing Windows Defender false positives
+      # without buying a code-signing certificate.
+      - name: Build PyInstaller from source (fresh bootloader → fewer AV flags)
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch v6.11.1 https://github.com/pyinstaller/pyinstaller.git pyinstaller-src
+          Push-Location pyinstaller-src/bootloader
+          python ./waf all
+          Pop-Location
+          python -m pip install ./pyinstaller-src
+          python -c "import PyInstaller; print('PyInstaller', PyInstaller.__version__, 'installed from source')"
+
       - name: Build shade-core.exe (PyInstaller)
         shell: pwsh
         run: ./scripts/build-core.ps1 -UpstreamRoot "${{ github.workspace }}/shade-upstream"

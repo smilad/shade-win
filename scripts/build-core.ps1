@@ -60,8 +60,19 @@ Copy-Item $upstreamMain (Join-Path $stage "main.py")
 Copy-Item $bootstrap    (Join-Path $stage "shade_core.py")
 Copy-Item $upstreamSrc  -Destination (Join-Path $stage "src") -Recurse
 
-# Install build deps
-& $Python -m pip install --upgrade pip pyinstaller cryptography h2 certifi brotli zstandard
+# Install build deps. PyInstaller is intentionally NOT in this list — CI
+# may have installed a source-built version (with a fresh bootloader, to
+# reduce Windows Defender / SmartScreen false positives), and reinstalling
+# from PyPI here would overwrite it with the heavily-fingerprinted
+# prebuilt bootloader. Only fall back to PyPI if PyInstaller isn't there.
+& $Python -m pip install --upgrade pip cryptography h2 certifi brotli zstandard
+& $Python -c "import PyInstaller" 2>&1 | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "==> PyInstaller not installed — pulling from PyPI."
+    & $Python -m pip install pyinstaller
+} else {
+    Write-Host "==> PyInstaller already installed (likely source-built, keeping it)."
+}
 
 Push-Location $stage
 try {
