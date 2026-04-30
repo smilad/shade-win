@@ -27,7 +27,28 @@ windows-app/
 └── README.md
 ```
 
-## Build
+## Download
+
+Pre-built `.exe` files for each release are on the
+[Releases page](https://github.com/smilad/shade-win/releases):
+
+- **`ShadeSetup.exe`** — installer (recommended).
+- **`Shade.exe`** — portable single-file build, no install needed.
+
+CI builds them on every tag push (see `.github/workflows/release.yml`).
+
+## Cut a release
+
+```powershell
+git tag v1.1.1
+git push origin v1.1.1
+```
+
+GitHub Actions builds the core, the app, and the installer, then publishes
+them on the Releases page. Manual runs (workflow_dispatch) build but do not
+release — artifacts are attached to the run page instead.
+
+## Build locally
 
 Run on a Windows machine. You need:
 

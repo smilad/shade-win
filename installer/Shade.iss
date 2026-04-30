@@ -17,7 +17,11 @@ AppPublisherURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=..\..\shade_macos\LICENSE
+; LicenseFile is optional. If LICENSE.txt is dropped next to this script
+; (the workflow does this), Inno Setup shows it during install.
+#if FileExists("LICENSE.txt")
+LicenseFile=LICENSE.txt
+#endif
 OutputBaseFilename=ShadeSetup
 Compression=lzma2
 SolidCompression=yes

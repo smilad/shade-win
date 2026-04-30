@@ -2,30 +2,51 @@
 # Run from a Windows PowerShell with Python 3.10+ on PATH.
 #
 #   .\scripts\build-core.ps1
+#   .\scripts\build-core.ps1 -UpstreamRoot D:\src\shade-upstream
 #
 # Output: windows-app\dist\shade-core.exe
 #         windows-app\src\Shade\Resources\shade-core.exe   (copied for app bundling)
+#
+# By default expects the upstream g3ntrix/Shade sources at ..\shade_macos
+# (the sibling layout used in this monorepo). Override with -UpstreamRoot
+# in CI where the upstream repo is cloned to a different path.
 
 param(
     [string]$Python = "python",
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot ".."))
+    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")),
+    [string]$UpstreamRoot = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-$root        = Resolve-Path $RepoRoot
-$upstream    = Join-Path $root.Path ".."  | Resolve-Path        # shade-windows root
-$srcDir      = Join-Path $upstream.Path "shade_macos\src"
-$mainPy      = Join-Path $upstream.Path "shade_macos\main.py"
-$bootstrap   = Join-Path $root.Path     "core\shade_core.py"
-$dist        = Join-Path $root.Path     "dist"
-$bundleDest  = Join-Path $root.Path     "src\Shade\Resources"
+$root = Resolve-Path $RepoRoot
 
-Write-Host "==> upstream src: $srcDir"
-Write-Host "==> bootstrap   : $bootstrap"
+# Resolve upstream root: explicit > sibling shade_macos (monorepo) > sibling shade-upstream (CI)
+if ([string]::IsNullOrEmpty($UpstreamRoot)) {
+    $candidates = @(
+        (Join-Path $root.Path "..\shade_macos"),
+        (Join-Path $root.Path "..\shade-upstream"),
+        (Join-Path $root.Path "..\Shade")
+    )
+    foreach ($c in $candidates) {
+        if (Test-Path (Join-Path $c "src\proxy_server.py")) { $UpstreamRoot = (Resolve-Path $c).Path; break }
+    }
+}
+if ([string]::IsNullOrEmpty($UpstreamRoot)) {
+    throw "Could not locate the upstream g3ntrix/Shade Python sources. Pass -UpstreamRoot <path>."
+}
 
-# Sanity checks
-foreach ($p in @($srcDir, $mainPy, $bootstrap)) {
+$upstreamSrc = Join-Path $UpstreamRoot "src"
+$upstreamMain = Join-Path $UpstreamRoot "main.py"
+$bootstrap   = Join-Path $root.Path "core\shade_core.py"
+$dist        = Join-Path $root.Path "dist"
+$bundleDest  = Join-Path $root.Path "src\Shade\Resources"
+
+Write-Host "==> upstream root : $UpstreamRoot"
+Write-Host "==> upstream src  : $upstreamSrc"
+Write-Host "==> bootstrap     : $bootstrap"
+
+foreach ($p in @($upstreamSrc, $upstreamMain, $bootstrap)) {
     if (!(Test-Path $p)) { throw "Missing: $p" }
 }
 
@@ -35,16 +56,15 @@ $stage = Join-Path $root.Path "build\stage"
 if (Test-Path $stage) { Remove-Item -Recurse -Force $stage }
 New-Item -ItemType Directory -Force -Path $stage | Out-Null
 
-Copy-Item $mainPy     (Join-Path $stage "main.py")
-Copy-Item $bootstrap  (Join-Path $stage "shade_core.py")
-Copy-Item $srcDir     -Destination (Join-Path $stage "src") -Recurse
+Copy-Item $upstreamMain (Join-Path $stage "main.py")
+Copy-Item $bootstrap    (Join-Path $stage "shade_core.py")
+Copy-Item $upstreamSrc  -Destination (Join-Path $stage "src") -Recurse
 
 # Install build deps
 & $Python -m pip install --upgrade pip pyinstaller cryptography h2 certifi brotli zstandard
 
 Push-Location $stage
 try {
-    # PyInstaller: onefile, include `src/` so the upstream flat imports work.
     & $Python -m PyInstaller `
         --onefile `
         --name shade-core `
