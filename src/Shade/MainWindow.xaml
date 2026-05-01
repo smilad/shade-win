@@ -2,33 +2,83 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:views="clr-namespace:Shade.Views"
         Title="Shade"
         Width="980" Height="720"
         MinWidth="900" MinHeight="640"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBackground}"
-        Foreground="{StaticResource Primary}"
+        WindowStyle="None"
         AllowsTransparency="False"
-        WindowStyle="SingleBorderWindow"
+        Background="Transparent"
+        ResizeMode="CanResize"
+        Foreground="{StaticResource Primary}"
         FontFamily="Segoe UI">
 
+    <!-- macOS-style hidden chrome: keeps native resize but hides the title bar.
+         CaptionHeight=44 makes the top bar draggable; we paint the bar ourselves
+         and put traffic-light buttons in the top-left so it actually feels like macOS. -->
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome
+            CaptionHeight="44"
+            ResizeBorderThickness="6"
+            CornerRadius="0"
+            GlassFrameThickness="0"
+            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <!-- Inner shell. CornerRadius=0 because DWM rounds the window itself
+             on Win11; on Win10 the corners are hard, which is fine fallback. -->
+        <Border Background="{StaticResource WindowBackground}"
+                CornerRadius="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="44" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-        <!-- Sidebar -->
-        <views:Sidebar Grid.Column="0" x:Name="SidebarHost" />
+                <!-- Title bar (drag area). The traffic-light buttons live here. -->
+                <Border Grid.Row="0" Grid.ColumnSpan="2" Background="Transparent">
+                    <DockPanel LastChildFill="False">
+                        <!-- macOS-style traffic lights -->
+                        <StackPanel Orientation="Horizontal" Margin="14,0,0,0"
+                                    VerticalAlignment="Center" DockPanel.Dock="Left"
+                                    shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button x:Name="TLClose" Style="{StaticResource TrafficLight}"
+                                    Background="#FFFF5F57" Click="Close_Click"
+                                    ToolTip="Close" />
+                            <Button x:Name="TLMin" Style="{StaticResource TrafficLight}"
+                                    Background="#FFFEBC2E" Click="Minimize_Click"
+                                    Margin="8,0,0,0" ToolTip="Minimize" />
+                            <Button x:Name="TLMax" Style="{StaticResource TrafficLight}"
+                                    Background="#FF28C840" Click="Maximize_Click"
+                                    Margin="8,0,0,0" ToolTip="Zoom" />
+                        </StackPanel>
 
-        <!-- Detail area -->
-        <Grid Grid.Column="1" x:Name="DetailHost" Margin="24">
-            <ContentControl x:Name="DetailContent" />
-        </Grid>
+                        <!-- Title text (center) -->
+                        <TextBlock x:Name="TitleText" Text="Shade" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Secondary}"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   DockPanel.Dock="Right" Margin="0,0,90,0" />
+                    </DockPanel>
+                </Border>
 
-        <!-- Tray icon (icon source set in code-behind so a missing
-             Resources\Shade.ico does not break the build) -->
+                <!-- Sidebar -->
+                <views:Sidebar Grid.Row="1" Grid.Column="0" x:Name="SidebarHost" />
+
+                <!-- Detail area -->
+                <Grid Grid.Row="1" Grid.Column="1" Margin="24,8,24,24">
+                    <ContentControl x:Name="DetailContent" />
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Tray icon (invisible in the layout, registers itself with the shell on init) -->
         <tb:TaskbarIcon x:Name="Tray"
                         ToolTipText="Shade"
                         TrayMouseDoubleClick="Tray_OnDoubleClick"

@@ -276,6 +276,30 @@
         </Setter>
     </Style>
 
+    <!-- ── macOS-style traffic-light close/min/max buttons ─────────────── -->
+    <Style x:Key="TrafficLight" TargetType="Button">
+        <Setter Property="Width" Value="13" />
+        <Setter Property="Height" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="#FF111111" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Ellipse x:Name="Dot" Fill="{TemplateBinding Background}" />
+                        <Ellipse Stroke="#22000000" StrokeThickness="0.5" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Dot" Property="Opacity" Value="0.85" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ── ScrollBar — minimal dark ────────────────────────────────────── -->
     <Style TargetType="ScrollBar">
         <Setter Property="Background" Value="Transparent" />
