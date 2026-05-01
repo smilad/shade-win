@@ -20,7 +20,8 @@ public partial class MainWindow : Window
         {
             InitializeComponent();
             DataContext = App.State;
-            Tray.IconSource = LoadTrayIcon();
+            try { Tray.IconSource = LoadTrayIcon(); }
+            catch (Exception ex) { App.LogCrash("LoadTrayIcon", ex); /* tray works without icon */ }
 
             SidebarHost.OnTabSelected = SetTab;
             SetTab(Tab.Dashboard);
@@ -102,24 +103,46 @@ public partial class MainWindow : Window
         Application.Current.Shutdown();
     }
 
+    /// Tray icon loading. H.NotifyIcon's IconSource accepts BitmapFrame
+    /// (from a real .ico/.png stream) but NOT RenderTargetBitmap — assigning
+    /// an RTB throws "ImageSource type ... not supported" at runtime. So we
+    /// build a tiny PNG in memory and load it as a BitmapFrame, which the
+    /// tray library converts to an HICON internally.
     private static ImageSource LoadTrayIcon()
     {
+        var icoPath = Path.Combine(AppContext.BaseDirectory, "Resources", "Shade.ico");
+        if (File.Exists(icoPath))
+        {
+            try
+            {
+                using var fs = File.OpenRead(icoPath);
+                return BitmapFrame.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            }
+            catch (Exception ex) { App.LogCrash("LoadTrayIcon.IcoFile", ex); }
+        }
+
         try
         {
-            var icoPath = Path.Combine(AppContext.BaseDirectory, "Resources", "Shade.ico");
-            if (File.Exists(icoPath))
-                return new BitmapImage(new Uri(icoPath, UriKind.Absolute));
-            return new BitmapImage(new Uri("pack://application:,,,/Resources/Shade.ico"));
+            var packed = Application.GetResourceStream(
+                new Uri("pack://application:,,,/Resources/Shade.ico"));
+            if (packed != null)
+                return BitmapFrame.Create(packed.Stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
         }
-        catch
-        {
-            var bmp = new RenderTargetBitmap(16, 16, 96, 96, PixelFormats.Pbgra32);
-            var visual = new DrawingVisual();
-            using (var ctx = visual.RenderOpen())
-                ctx.DrawRectangle(new SolidColorBrush(Color.FromRgb(0xB1, 0x91, 0xFF)),
-                    null, new Rect(0, 0, 16, 16));
-            bmp.Render(visual);
-            return bmp;
-        }
+        catch (Exception ex) { App.LogCrash("LoadTrayIcon.Pack", ex); }
+
+        // Fallback: render a 16x16 purple square, encode as PNG, hand back a BitmapFrame.
+        var rtb = new RenderTargetBitmap(16, 16, 96, 96, PixelFormats.Pbgra32);
+        var visual = new DrawingVisual();
+        using (var ctx = visual.RenderOpen())
+            ctx.DrawRectangle(new SolidColorBrush(Color.FromRgb(0xB1, 0x91, 0xFF)),
+                null, new Rect(0, 0, 16, 16));
+        rtb.Render(visual);
+
+        var enc = new PngBitmapEncoder();
+        enc.Frames.Add(BitmapFrame.Create(rtb));
+        var ms = new MemoryStream();
+        enc.Save(ms);
+        ms.Position = 0;
+        return BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
     }
 }
